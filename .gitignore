@@ -1,0 +1,8 @@
+**/*.log
+.idea/
+tmp/
+.vscode/
+.env
+generated/
+.vendor/
+*.aes
