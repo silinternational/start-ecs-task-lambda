@@ -8,3 +8,5 @@ set -x
 
 # Build all the things
 go build .
+
+ls -al
