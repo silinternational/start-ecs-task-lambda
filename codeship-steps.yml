@@ -1,9 +1,9 @@
 - name: s3deploy_develop
   service: binary
   tag: develop
-  command: aws s3 cp ./start-ecs-task-lambda s3://gtis-ops-lamdas/develop
+  command: ./codeship.sh && aws s3 cp ./start-ecs-task-lambda s3://gtis-ops-lamdas/develop
 
 - name: s3deploy_production
   service: binary
   tag: master
-  command: aws s3 cp ./start-ecs-task-lambda s3://gtis-ops-lamdas/production
+  command:  ./codeship.sh && aws s3 cp ./start-ecs-task-lambda s3://gtis-ops-lamdas/production
