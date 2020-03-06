@@ -1,0 +1,8 @@
+binary:
+  build:
+    image: builder
+    dockerfile: Dockerfile
+  cached: true
+  encrypted_env_file: .env.encrypted
+  working_dir: /go/src/start-ecs-task-lambda
+  command: true
