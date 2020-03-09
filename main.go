@@ -3,6 +3,7 @@ package main
 import (
 	"errors"
 	"log"
+	"os"
 
 	"github.com/aws/aws-lambda-go/lambda"
 	"github.com/aws/aws-sdk-go/service/ecs"
@@ -18,6 +19,19 @@ func main() {
 	lambda.Start(handler)
 }
 
+func getConfigOrEnv(configVal, envKey string) (string, error) {
+	if configVal != "" {
+		return configVal, nil
+	}
+
+	value := os.Getenv(envKey)
+	if value != "" {
+		return configVal, nil
+	}
+
+	return "", errors.New("Missing required config/env var " + envKey)
+}
+
 // Ignoring the following input values ...
 //  EnableECSManagedTags
 //  Group
@@ -28,21 +42,18 @@ func main() {
 //  StartedBy
 //  Tags
 func getStartTaskInput(config LambdaConfig) (ecs.StartTaskInput, error) {
-	cluster := config.ECSCluster
-	if cluster == "" {
-		err := errors.New("missing required config: ecs_cluster")
+	cluster, err := getConfigOrEnv(config.ECSCluster, "ECS_CLUSTER")
+	if err != nil {
 		return ecs.StartTaskInput{}, err
 	}
 
-	container := config.ECSContainerInstance
-	if container == "" {
-		err := errors.New("missing required config: ecs_container_instance")
+	container, err := getConfigOrEnv(config.ECSContainerInstance, "ECS_CONTAINER_INSTANCE")
+	if err != nil {
 		return ecs.StartTaskInput{}, err
 	}
 
-	taskDef := config.ECSTaskDefinition
-	if taskDef == "" {
-		err := errors.New("missing required config: ecs_task_definition")
+	taskDef, err := getConfigOrEnv(config.ECSTaskDefinition, "ECS_TASK_DEFINITION")
+	if err != nil {
 		return ecs.StartTaskInput{}, err
 	}
 
