@@ -11,4 +11,7 @@ go build .
 
 ls -al
 
-aws s3 cp ./start-ecs-task-lambda s3://gtis-ops-lambdas/$1/start-ecs-task-lambda
+zip start-ecs-task-lambda.zip start-ecs-task-lambda
+
+aws s3 cp ./start-ecs-task-lambda.zip s3://gtis-ops-lambdas/$1/start-ecs-task-lambda.zip
+
