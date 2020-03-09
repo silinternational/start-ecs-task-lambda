@@ -11,7 +11,6 @@ import (
 
 type LambdaConfig struct {
 	ECSCluster string `json:"ecs_cluster"`
-	ECSContainerInstance string `json:"ecs_container_instance"`
 	ECSTaskDefinition string `json:"ecs_task_definition"`
 }
 
@@ -32,41 +31,24 @@ func getConfigOrEnv(configVal, envKey string) (string, error) {
 	return "", errors.New("Missing required config/env var " + envKey)
 }
 
-// Ignoring the following input values ...
-//  EnableECSManagedTags
-//  Group
-//  NetworkConfiguration
-//  Overrides
-//  PropagateTags
-//  ReferenceId
-//  StartedBy
-//  Tags
-func getStartTaskInput(config LambdaConfig) (ecs.StartTaskInput, error) {
-	cluster, err := getConfigOrEnv(config.ECSCluster, "ECS_CLUSTER")
-	if err != nil {
-		return ecs.StartTaskInput{}, err
-	}
-
-	container, err := getConfigOrEnv(config.ECSContainerInstance, "ECS_CONTAINER_INSTANCE")
-	if err != nil {
-		return ecs.StartTaskInput{}, err
-	}
+func getRunTaskInput(config LambdaConfig) (ecs.RunTaskInput, error) {
+	// optional ECS_CLUSTER
+	cluster, _ := getConfigOrEnv(config.ECSCluster, "ECS_CLUSTER")
 
 	taskDef, err := getConfigOrEnv(config.ECSTaskDefinition, "ECS_TASK_DEFINITION")
 	if err != nil {
-		return ecs.StartTaskInput{}, err
+		return ecs.RunTaskInput{}, err
 	}
 
-	input := ecs.StartTaskInput{
+	input := ecs.RunTaskInput{
 		Cluster: &cluster,
-		ContainerInstances: []*string{&container},
 		TaskDefinition: &taskDef,
 	}
 	return input, nil
 }
 
 func handler(config LambdaConfig) error {
-	startTaskInput, err := getStartTaskInput(config)
+	runTaskInput, err := getRunTaskInput(config)
 	if err != nil {
 		log.Println(err.Error())
 		return err
@@ -75,7 +57,7 @@ func handler(config LambdaConfig) error {
 
 	c := ecs.ECS{}
 
-	output, err := c.StartTask(&startTaskInput)
+	output, err := c.RunTask(&runTaskInput)
 	if err != nil {
 		err := errors.New("error starting ecs task: " + err.Error())
 		log.Println(err.Error())
