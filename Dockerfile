@@ -1,4 +1,5 @@
-FROM golang:latest
+# Ensure this version tracks with go.mod
+FROM golang:1.20
 
 RUN apt-get update && apt-get install -y groff zip python python-pip && pip install awscli
 
