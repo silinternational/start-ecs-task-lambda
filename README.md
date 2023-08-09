@@ -1,3 +1,5 @@
+# Archived -- this project is no longer in use
+
 # start-ecs-task-lambda
 Golang lambda that runs a one-off ECS task
 
